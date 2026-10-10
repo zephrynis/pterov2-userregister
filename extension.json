@@ -1,0 +1,20 @@
+{
+  "$schema": "./vendor/sdk/manifest.schema.json",
+  "id": "userregister",
+  "name": "UserRegister",
+  "version": "1.0.0",
+  "description": "Public account registration with optional email verification controlled by administrators.",
+  "provider": "UserRegister\\UserRegisterProvider",
+  "autoload": {
+    "UserRegister\\": "src"
+  },
+  "requires": {
+    "panel": ">=2.0.0-dev <2.1",
+    "sdk": ">=2.0.0-beta.4 <2.0.0-beta.5",
+    "php": ">=8.3 <9"
+  },
+  "ui": {
+    "entry": "dist/client.js",
+    "mode": "native"
+  }
+}

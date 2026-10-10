@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXTENSION_ID: userregister
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: userregister
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: userregister
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: userregister/package-lock.json
+
+      - name: Validate release version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const read = (path) => JSON.parse(fs.readFileSync(path, 'utf8'));
+          const version = read('package.json').version;
+          const manifest = read('extension.json');
+          const lock = read('package-lock.json');
+          if (process.env.RELEASE_TAG !== version || manifest.version !== version ||
+              lock.version !== version || lock.packages[''].version !== version) {
+            throw new Error('Tag must be <version>, matching package.json, extension.json, and package-lock.json.');
+          }
+          JS
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test, build, and package
+        run: npm run package
+
+      - name: Upload download ZIP artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: ${{ env.EXTENSION_ID }}/release/${{ env.EXTENSION_ID }}-${{ github.ref_name }}.zip
+          if-no-files-found: error
+          archive: false
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          EXTENSION_ID: ${{ env.EXTENSION_ID }}
+        run: |
+          asset="release/${EXTENSION_ID}-${RELEASE_TAG}.pteroext"
+          test -s "$asset"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --title "$RELEASE_TAG"
+            gh release upload "$RELEASE_TAG" "$asset" --clobber
+          else
+            flags=()
+            if [[ "$RELEASE_TAG" == *-* ]]; then
+              flags+=(--prerelease)
+            fi
+            gh release create "$RELEASE_TAG" "$asset" \
+              --verify-tag --generate-notes --title "$RELEASE_TAG" "${flags[@]}"
+          fi
