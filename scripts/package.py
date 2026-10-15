@@ -11,7 +11,7 @@ assert (root / manifest['ui']['entry']).is_file(), 'Build before packaging'
 output = root / 'release' / f"{manifest['id']}-{version}.pteroext"
 output.parent.mkdir(exist_ok=True)
 with ZipFile(output, 'w', ZIP_DEFLATED) as archive:
-    for name in ['extension.json', 'README.md', 'src', 'routes', 'database', 'resources', 'dist']:
+    for name in ['extension.json', 'README.md', 'SDK_PROVENANCE.md', 'src', 'routes', 'database', 'resources', 'dist']:
         path = root / name
         for file in ([path] if path.is_file() else sorted(path.rglob('*'))):
             if file.is_file() and not str(file.relative_to(root)).startswith('src/client/'):

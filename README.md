@@ -1,4 +1,4 @@
-# UserRegister 1.0.0
+# UserRegister 1.0.1
 
 Native Pterodactyl Panel v2 extension for public signup with administrator-controlled email verification. Registration starts closed, and email verification is required by default.
 
@@ -12,9 +12,9 @@ The signup pages at `/extensions/userregister` work without JavaScript and use t
 
 ## Installation and settings
 
-1. Check the running Panel supports SDK `2.0.0-beta.4`. This prerelease integration is deliberately constrained to beta.4; retest before widening it.
+1. Use Panel **2.0.0-beta.2** with SDK **2.0.0-beta.6**. This prerelease integration is deliberately constrained below SDK beta.7; retest before widening it.
 2. Validate an unpacked runtime package with `php artisan p:extension:doctor /path/to/userregister`.
-3. Install `release/userregister-1.0.0.pteroext` through Admin → Extensions, or `php artisan p:extension:install /path/to/userregister-1.0.0.pteroext --enable`.
+3. Install `release/userregister-1.0.1.pteroext` through Admin → Extensions, or `php artisan p:extension:install /path/to/userregister-1.0.1.pteroext --enable`.
 4. Check the Panel's existing mail transport and queue worker. Verification email sends immediately; the Panel's normal account-created notification uses its existing queue.
 5. Under Admin → Extensions → UserRegister settings, choose **Require email verification** (on by default), enable **Open public registration**, then reload the browser.
 
@@ -55,9 +55,9 @@ npm run package
 
 ## SDK provenance and compatibility
 
-`vendor/sdk` is a development-only copy of `/app/packages/sdk` from the local running Panel on 2026-10-08, SDK `2.0.0-beta.4`, image revision `ff9527a2e969ae1baa691add01f6cdbde36eb709`. It is independent of PteroMonaco's pinned SDK. Its manifest schema SHA-256 is `11e28125edc8de24e0d448ea0db4ecadefc7369732b887b4db566974c5d98f8f`.
+`vendor/sdk` is a development-only copy of `/app/packages/sdk` from the local running Panel on 2026-10-15, SDK **2.0.0-beta.6**, image revision `ea742d332f5861a81e502857446b8df9cb9f0254` (Panel **2.0.0-beta.2**). See `SDK_PROVENANCE.md`.
 
-The documentation snapshot synced 2026-10-05 demonstrates beta.3. The local checkout and running Panel both report beta.4 but their manifest schemas differ. This package uses the running Panel's schema and confirmed `registerWebRoutes`, `loadExtensionViews`, public settings, login slot, and build preset contracts. Current constraints are Panel `>=2.0.0-dev <2.1`, SDK `>=2.0.0-beta.4 <2.0.0-beta.5`, PHP `>=8.3 <9`.
+The documentation snapshot synced 2026-10-14 still demonstrates SDK beta.4; the installed beta.6 SDK and Panel source take precedence. Current constraints are Panel `>=2.0.0-dev <2.0.0-beta.3`, SDK `>=2.0.0-beta.6 <2.0.0-beta.7`, PHP `>=8.3 <9`. The Panel's extension compatibility API still reports `2.0.0-dev` despite the beta.2 release tag.
 
 References: [v2 extensions](https://docs.pterodactyl.io/v2/extensions), [building](https://docs.pterodactyl.io/v2/extensions/building), [reference](https://docs.pterodactyl.io/v2/extensions/reference).
 
